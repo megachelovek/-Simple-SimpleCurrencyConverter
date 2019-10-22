@@ -1,0 +1,97 @@
+﻿@{
+    ViewBag.Title = "Конвертер";
+}
+
+
+<div class="jumbotron">
+    <div class="form-style-5">
+        <form id="currencyForm" runat="server">
+            <p><span class="number">1</span>Исходная валюта в USD=<span id="inputUSD"></span></p>
+
+            <select id="currencyInput" onchange="getInputUSD(this)">
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="RUB">RUB</option>
+                <option value="GBP">GBP</option>
+                <option value="JPY">JPY</option>
+            </select>
+            <p><span class="number">2</span>Целевая валюта в USD=<span id="outputUSD"></span></p>
+
+            <select id="currencyOutput" onchange="getOutputUSD(this)">
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="RUB">RUB</option>
+                <option value="GBP">GBP</option>
+                <option value="JPY">JPY</option>
+            </select>
+            <p><span class="number">3</span>Введите количество валюты</p>
+
+            <input type="number" id="currencyCount" placeholder="Количество денег"/>
+            <div>
+                <button type="submit" value="Submit" class="submit" onclick="submit()">Конвертировать</button>
+            </div>
+            <p><span class="number">4</span>Результат </p>
+            <p>
+                <div id="inputResult">10</div>
+                <div id="inputCurrencyResult">USD</div> =
+                <div id="outputResult">640</div>
+                <div id="outputCurrencyResult">RUB</div>
+            </p>
+        </form>
+    </div>
+</div>
+
+<script>
+    function submit() {
+        var data = {
+            input: document.getElementById("currencyCount").value,
+            inputCurrency: document.getElementById("currencyInput").options[selectBlock.selectedIndex].value,
+            outputCurrency: document.getElementById("currencyOutput").options[selectBlock.selectedIndex].value
+        };
+        $.ajax({
+            type: "GET",
+            url: "/Home/ConvertCurrency",
+            data: { currencyModel: data },
+            success: function(response) {
+                alert(response);
+            },
+            error: function(response) {
+                alert("API error");
+            }
+        });
+    }
+
+    function getInputUSD(selectBlock) {
+        var selected = selectBlock.options[selectBlock.selectedIndex].value;
+        $.ajax({
+            type: "GET",
+            url: "/Home/GetCurrency",
+            data: { currency: selected },
+            success: function(response) {
+                var currency = JSON.parse(response).rates;
+                document.getElementById("inputUSD").innerHTML =
+                    (currency[selected] / currency["USD"]).toString().slice(0, 9);
+            },
+            error: function(response) {
+                alert("API error");
+            }
+        });
+    }
+
+    function getOutputUSD(selectBlock) {
+        var selected = selectBlock.options[selectBlock.selectedIndex].value;
+        $.ajax({
+            type: "GET",
+            url: "/Home/GetCurrency",
+            data: { currency: selected },
+            success: function(response) {
+                var currency = JSON.parse(response).rates;
+                document.getElementById("outputUSD").innerHTML =
+                    (currency[selected] / currency["USD"]).toString().slice(0, 9);
+            },
+            error: function(response) {
+                alert("API error");
+            }
+        });
+    }
+</script>

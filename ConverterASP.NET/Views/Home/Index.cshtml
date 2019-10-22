@@ -1,0 +1,90 @@
+﻿@using ConverterASP.NET.Models
+@model  ConverterASP.NET.Models.CurrencyModel
+@{
+    ViewBag.Title = "Конвертер";
+}
+
+
+<div class="jumbotron">
+    <div class="form-style-5">
+        @using (Html.BeginForm())
+        {
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <p><span class="number">1</span>Исходная валюта <span id="inputUSD"></span></p>
+                    @Html.DropDownListFor(model => model.InputCurrency, new SelectList(Enum.GetValues(typeof(CurrencyEnum))), new {onchange = "getInputUSD(this)"})
+                </div>
+
+                <div class="form-group">
+                    <p><span class="number">2</span>Целевая валюта <span id="outputUSD"></span></p>
+                    @Html.DropDownListFor(model => model.OutputCurrency, new SelectList(Enum.GetValues(typeof(CurrencyEnum))), new {onchange = "getOutputUSD(this)"})
+                </div>
+
+                <div class="form-group">
+                    <p><span class="number">3</span>Введите количество валюты </p>
+                    <p><small>Дробная часть через ','</small></p>
+                    @Html.TextBoxFor(model => model.Input, new {htmlAttributes = new {@class = "form-control", @type = "number" } })
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" value="Конвертировать" class="btn btn-default"/>
+                </div>
+
+                <p><span class="number">4</span>Результат </p>
+                <p>
+                    @{
+                        if (Html.ViewData.Model != null)
+                        {
+                            <span>
+                                <big>@Html.ViewData.Model.Input</big>
+                                <big>@Html.ViewData.Model.InputCurrency</big>
+                                <big> = </big>
+                                <big>
+                                    @Html.ViewData.Model.Output
+                                </big>
+                                <big>@Html.ViewData.Model.OutputCurrency</big>
+                            </span>
+                        }
+                    }
+
+                </p>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    function getInputUSD(selectBlock) {
+        var selected = selectBlock.options[selectBlock.selectedIndex].value;
+        $.ajax({
+            type: "GET",
+            url: "/Home/GetCurrency",
+            data: { currency: selected },
+            success: function(response) {
+                var currency = JSON.parse(response).rates;
+                document.getElementById("inputUSD").innerHTML =
+                    "в USD= " + (currency[selected] / currency["USD"]).toString().slice(0, 9);
+            },
+            error: function(response) {
+                alert("API error");
+            }
+        });
+    }
+
+    function getOutputUSD(selectBlock) {
+        var selected = selectBlock.options[selectBlock.selectedIndex].value;
+        $.ajax({
+            type: "GET",
+            url: "/Home/GetCurrency",
+            data: { currency: selected },
+            success: function(response) {
+                var currency = JSON.parse(response).rates;
+                document.getElementById("outputUSD").innerHTML =
+                    "в USD= " + (currency[selected] / currency["USD"]).toString().slice(0, 9);
+            },
+            error: function(response) {
+                alert("API error");
+            }
+        });
+    }
+</script>
