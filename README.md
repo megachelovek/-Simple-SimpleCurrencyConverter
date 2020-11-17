@@ -1,6 +1,6 @@
 # Simple currency converter
 
-Implemented MVC application with connection to other API for calculating currency.
+Implemented MVC application with connection to other API for calculating currency. 
 
 ### Technology stack / Libraries
   - C#
